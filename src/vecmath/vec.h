@@ -238,6 +238,8 @@ public:
 
 	Vec3<T> operator-( const Vec3<T>& a ) const { return Vec3<T>(n[0]-a[0],n[1]-a[1],n[2]-a[2]); }
 	Vec3<T> operator+( const Vec3<T>& a ) const { return Vec3<T>(a[0]+n[0],a[1]+n[1],a[2]+n[2]); }
+	// <T> operator*( const Vec3<T>& a ) const { return a[0]*n[0] + a[1]*n[1] + a[2]*n[2]; }
+
 
 	//---[ Conversion Operators ]----------------
 
@@ -263,6 +265,14 @@ public:
 			if (n[i] < 0) n[i] = 0.0;
 			if (n[i] > 1) n[i] = 1.0;
 		}
+	}
+
+	Vec3<T>& cross(const Vec3<T>& other) {
+	    double nX = (n[1] * other[2]) - (other[1] * n[2]);
+	    double nY = (n[2] * other[0]) - (other[2] * n[0]);
+	    double nZ = (n[0] * other[1]) - (other[0] * n[1]);
+
+	    return *(new Vec3<T>(nX, nY, nZ));
 	}
 
 	//---[ Zero Test ]---------------------------

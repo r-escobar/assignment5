@@ -82,6 +82,7 @@ bool Trimesh::intersectLocal(ray& r, isect& i) const
 }
 
 bool TrimeshFace::intersect(ray& r, isect& i) const {
+
   return intersectLocal(r, i);
 }
 
@@ -91,11 +92,75 @@ bool TrimeshFace::intersect(ray& r, isect& i) const {
 bool TrimeshFace::intersectLocal(ray& r, isect& i) const
 {
 
+
+
     const Vec3d& a = parent->vertices[ids[0]];
     const Vec3d& b = parent->vertices[ids[1]];
     const Vec3d& c = parent->vertices[ids[2]];
 
     // YOUR CODE HERE
+
+    Vec3d bMinusA = b - a;
+    Vec3d cMinusA = c - a;
+
+
+    Vec3d normal = bMinusA.cross(cMinusA);
+
+    double t = ((r.p - a) * normal) / (r.d * normal);
+
+    if(t < 0) {
+        //std::cout << "RAY MISSES TRIANGLE!\n";
+
+        return false;
+    }
+
+    Vec3d p = r.p + t * r.d;
+
+    Vec3d pMinusA = p - a;
+    Vec3d pMinusB = p - b;
+    Vec3d pMinusC = p - c;
+    Vec3d cMinusB = c - b;
+    Vec3d aMinusC = a - c;
+
+    double test1 = bMinusA.cross(pMinusA) * normal;
+    double test2 = cMinusB.cross(pMinusB) * normal;
+    double test3 = aMinusC.cross(pMinusC) * normal;
+
+    // if (test1 >= 0 && test2 >= 0) {
+
+    // }
+    //if((bMinusA.cross(pMinusA) * normal >= 0)) {
+
+     if(test1 >= 0 && test2 >= 0 && test3 >= 0) {
+
+
+        i.t = t;
+
+        double d00 = bMinusA * bMinusA;
+        double d01 = bMinusA * cMinusA;
+        double d11 = cMinusA * cMinusA;
+        double d20 = pMinusA * bMinusA;
+        double d21 = pMinusA * cMinusA;
+
+        double denom = d00 * d11 - d01 * d01;
+
+        double v = (d11 * d20 - d01 * d21) / denom;
+        double w = (d00 * d21 - d01 * d20) / denom;
+        double u = 1.0f - v - w;
+
+        i.uvCoordinates[0] = u;
+        i.uvCoordinates[1] = v;
+
+        i.bary[0] = u;
+        i.bary[1] = v;
+        i.bary[2] = w;
+
+
+        std::cout << "RAY INTERSECTS TRIANGLE!\n";
+        return true;
+     }
+
+    //std::cout << "RAY MISSES TRIANGLE!\n";
 
     return false;
 }
