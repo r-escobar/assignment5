@@ -81,10 +81,10 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 		// more steps: add in the contributions from reflected and refracted
 		// rays.
 
-		std::cout << "INTERSECTED WITH SOMETHING!\n";
+		//std::cout << "INTERSECTED WITH SOMETHING!\n";
 
-	  //const Material& m = i.getMaterial();
-	  //colorC = m.shade(scene, r, i);
+	  const Material& m = i.getMaterial();
+	  colorC = m.shade(scene, r, i);
 	} else {
 		// No intersection.  This ray travels to infinity, so we color
 		// it according to the background color, which in this (simple) case

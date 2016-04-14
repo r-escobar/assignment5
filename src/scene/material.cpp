@@ -23,26 +23,40 @@ Vec3d Material::shade(Scene *scene, const ray& r, const isect& i) const
 
   // Your mission is to fill in this method with the rest of the phong
   // shading model, including the contributions of all the light sources.
+  Vec3d iPhong = ke(i) + ka(i) * scene->ambient();
 
+  Vec3d currentPoint = r.p + r.d * i.t;
   // When you're iterating through the lights,
   // you'll want to use code that looks something
   // like this:
   //
-  // for ( vector<Light*>::const_iterator litr = scene->beginLights(); 
-  // 		litr != scene->endLights(); 
-  // 		++litr )
-  // {
-  // 		Light* pLight = *litr;
-  // 		.
-  // 		.
-  // 		.
-  // }
+
+
+  for ( vector<Light*>::const_iterator litr = scene->beginLights(); 
+  		litr != scene->endLights(); 
+  		++litr )
+  {
+  		Light* pLight = *litr;
+
+      Vec3d incLightDir = pLight->getDirection(currentPoint);
+
+      ray rayToLight(currentPoint, incLightDir, ray::VISIBILITY);
+
+      Vec3d reflectDir = 2 * (incLightDir * i.N) * i.N - incLightDir;
+
+
+      Vec3d firstHalf = kd(i) * std::max(i.N * incLightDir, 0.0) + ks(i) * std::pow(std::max(-r.d * reflectDir, 0.0), shininess(i));
+      double attenIntensity = pLight->distanceAttenuation(currentPoint);
+
+      iPhong += firstHalf * attenIntensity;
+
+  }
 
   // You will need to call both the distanceAttenuation() and
   // shadowAttenuation() methods for each light source in order to
   // compute shadows and light falloff.
 
-  return kd(i);
+  return iPhong;
 }
 
 TextureMap::TextureMap( string filename ) {

@@ -37,7 +37,14 @@ double PointLight::distanceAttenuation(const Vec3d& P) const
   // You'll need to modify this method to attenuate the intensity 
   // of the light based on the distance between the source and the 
   // point P.  For now, we assume no attenuation and just return 1.0
-  return 1.0;
+
+  Vec3d dVec = P - position;
+  double D = dVec.length();
+
+  double iOut = std::min(1.0, 1 / (constantTerm + linearTerm * D + quadraticTerm * D * D)); 
+
+
+  return iOut;
 }
 
 Vec3d PointLight::getColor() const
@@ -57,5 +64,22 @@ Vec3d PointLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 {
   // YOUR CODE HERE:
   // You should implement shadow-handling code here.
-  return Vec3d(1,1,1);
+
+  Vec3d d = getDirection(p);
+  isect i;
+
+  ray rayToLight(p, d, ray::SHADOW);
+
+
+  Scene* scene = SceneElement::getScene();
+  scene->intersect(rayToLight, i);
+
+
+  double tLight = (position - p).length();
+
+  if(i.t < tLight)
+    return Vec3d(0, 0, 0);
+  else
+    return Vec3d(1, 1, 1);
+
 }
