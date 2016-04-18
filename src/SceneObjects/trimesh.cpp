@@ -104,11 +104,11 @@ bool TrimeshFace::intersectLocal(ray& r, isect& i) const
     Vec3d cMinusA = c - a;
 
 
-    Vec3d normal = bMinusA.cross(cMinusA);
+    double d = -(a * normal);
 
-    double t = ((r.p - a) * normal) / (r.d * normal);
+    double t = -(r.p * normal + d) / (r.d * normal);
 
-    if(t < 0) {
+    if(t < RAY_EPSILON) {
         //std::cout << "RAY MISSES TRIANGLE!\n";
 
         return false;
@@ -126,15 +126,13 @@ bool TrimeshFace::intersectLocal(ray& r, isect& i) const
     double test2 = cMinusB.cross(pMinusB) * normal;
     double test3 = aMinusC.cross(pMinusC) * normal;
 
-    // if (test1 >= 0 && test2 >= 0) {
 
-    // }
-    //if((bMinusA.cross(pMinusA) * normal >= 0)) {
-
-     if(test1 >= 0 && test2 >= 0 && test3 >= 0) {
+     if(test1 >= RAY_EPSILON && test2 >= RAY_EPSILON && test3 >= RAY_EPSILON) {
 
 
         i.t = t;
+        i.setN(normal);
+
 
         double d00 = bMinusA * bMinusA;
         double d01 = bMinusA * cMinusA;
@@ -151,12 +149,14 @@ bool TrimeshFace::intersectLocal(ray& r, isect& i) const
         i.uvCoordinates[0] = u;
         i.uvCoordinates[1] = v;
 
-        i.bary[0] = u;
-        i.bary[1] = v;
-        i.bary[2] = w;
+        i.setBary(Vec3d(u, v, w));
+        i.setUVCoordinates(Vec2d(u, v));
 
 
-        std::cout << "RAY INTERSECTS TRIANGLE!\n";
+
+        i.setObject(this);
+
+        //std::cout << "RAY INTERSECTS TRIANGLE!\n";
         return true;
      }
 
