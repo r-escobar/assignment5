@@ -15,7 +15,21 @@ Vec3d DirectionalLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 {
   // YOUR CODE HERE:
   // You should implement shadow-handling code here.
-  return Vec3d(1,1,1);
+  Vec3d d = getDirection(p);
+  d.normalize();
+  isect i;
+
+  ray rayToLight(p, d, ray::SHADOW);
+
+  Scene* scene = SceneElement::getScene();
+  if(scene->intersect(rayToLight, i)) {
+    return Vec3d(0, 0, 0);
+  }
+
+
+
+  return color;
+  // return Vec3d(1, 1, 1);
 }
 
 Vec3d DirectionalLight::getColor() const
@@ -38,7 +52,7 @@ double PointLight::distanceAttenuation(const Vec3d& P) const
   // of the light based on the distance between the source and the 
   // point P.  For now, we assume no attenuation and just return 1.0
 
-  Vec3d dVec = P - position;
+  Vec3d dVec = position - P;
   double D = dVec.length();
 
   double iOut = std::min(1.0, 1 / (constantTerm + linearTerm * D + quadraticTerm * D * D)); 
@@ -79,7 +93,8 @@ Vec3d PointLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 
   if(i.t < tLight)
     return Vec3d(0, 0, 0);
-  else
-    return Vec3d(1, 1, 1);
 
+  return color;
+
+   // return Vec3d(1, 1, 1);
 }

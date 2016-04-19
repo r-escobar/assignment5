@@ -23,7 +23,7 @@ Vec3d Material::shade(Scene *scene, const ray& r, const isect& i) const
 
   // Your mission is to fill in this method with the rest of the phong
   // shading model, including the contributions of all the light sources.
-  Vec3d iPhong = ke(i) + ka(i) * scene->ambient();
+  Vec3d iPhong = ke(i) + prod(ka(i), scene->ambient());
 
   Vec3d currentPoint = r.p + r.d * i.t;
   // When you're iterating through the lights,
@@ -39,16 +39,25 @@ Vec3d Material::shade(Scene *scene, const ray& r, const isect& i) const
   		Light* pLight = *litr;
 
       Vec3d incLightDir = pLight->getDirection(currentPoint);
+      incLightDir.normalize();
 
       ray rayToLight(currentPoint, incLightDir, ray::VISIBILITY);
 
       Vec3d reflectDir = 2 * (incLightDir * i.N) * i.N - incLightDir;
+      reflectDir.normalize();
 
+      Vec3d viewDir = scene->getCamera().getEye() - currentPoint;
+      viewDir.normalize();
 
-      Vec3d firstHalf = kd(i) * std::max(i.N * incLightDir, 0.0) + ks(i) * std::pow(std::max(-r.d * reflectDir, 0.0), shininess(i));
+      Vec3d firstHalf = kd(i) * std::max(i.N * incLightDir, 0.0) + ks(i) * std::pow(std::max(viewDir * reflectDir, 0.0), shininess(i));
       double attenIntensity = pLight->distanceAttenuation(currentPoint);
+      Vec3d shadowAttenuation = pLight->shadowAttenuation(rayToLight, currentPoint);
 
-      iPhong += firstHalf * attenIntensity;
+      firstHalf *= attenIntensity;
+
+      Vec3d total = Vec3d(firstHalf[0] * shadowAttenuation[0], firstHalf[1] * shadowAttenuation[1], firstHalf[2] * shadowAttenuation[2]);
+      iPhong += total;
+
 
   }
 

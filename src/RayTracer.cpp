@@ -74,7 +74,7 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 
 		// An intersection occurred!  We've got work to do.  For now,
 		// this code gets the material for the surface that was intersected,
-		// and asks that material to provide a color for the ray.  
+		// and asks that material to provide a color for the ray.  	
 
 		// This is a great place to insert code for recursive ray tracing.
 		// Instead of just returning the result of shade(), add some
@@ -84,7 +84,69 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 		//std::cout << "INTERSECTED WITH SOMETHING!\n";
 
 	  const Material& m = i.getMaterial();
-	  colorC = m.shade(scene, r, i);
+	  Vec3d color = m.shade(scene, r, i);
+
+	  if(depth == 0) {
+	  	return color;
+	  }
+
+
+
+
+	  /* REFLECTION */
+	  if(m.Refl()) {
+	  	Vec3d reflectDir = 2 * (-r.d * i.N) * i.N + r.d;
+	  	reflectDir.normalize();
+
+	  	ray reflectedRay(r.at(i.t), reflectDir, ray::REFLECTION);
+
+
+	  	color += prod(m.kr(i), traceRay(reflectedRay, depth - 1));
+	  }
+
+	  /* REFRACTION*/ 
+
+	  if(m.Trans()) {
+  		  double ni, nt;
+		  Vec3d transmittedDir;
+
+		  int direction;
+
+	  	  double cosI = -r.d * i.N;
+
+		  if(cosI > 0.0) {
+		  	ni = 1.0;
+		  	nt = m.index(i);
+		  	direction = 1;
+		  } else {
+		  	ni = m.index(i);
+		  	nt = 1.0;
+		  	direction = -1;
+		  }
+
+		  double nCoeff = ni/nt;
+
+		  Vec3d adjustedNormal = direction * i.N;
+
+
+		  double TIRtest = (nCoeff * nCoeff) * (1 - (cosI * cosI));
+		  Vec3d xProj = nCoeff * (i.N * (-r.d * i.N) + r.d);
+
+
+		  if(TIRtest <= 1.0) {
+		  	transmittedDir = (direction * nCoeff * r.d) + nCoeff * adjustedNormal * (-r.d * i.N) - i.N * sqrt(1 - xProj * xProj);
+
+		  	transmittedDir.normalize();
+
+		  	ray transmittedRay(r.at(i.t), direction * transmittedDir, ray::REFRACTION);
+
+		  	color += prod(m.kt(i), traceRay(transmittedRay, depth - 1));
+		  }
+	  }
+
+	  colorC = color;
+
+
 	} else {
 		// No intersection.  This ray travels to infinity, so we color
 		// it according to the background color, which in this (simple) case
