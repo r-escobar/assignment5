@@ -126,6 +126,11 @@ void GraphicalUI::cb_refreshSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->refreshInterval=clock_t(((Fl_Slider *)o)->value()) ;
 }
 
+void GraphicalUI::cb_sampleSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_nSamples=int(((Fl_Slider *)o)->value()) ;
+}
+
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 {
 	pUI=(GraphicalUI*)(o->user_data());
@@ -296,6 +301,19 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_refreshSlider->value(refreshInterval);
 	m_refreshSlider->align(FL_ALIGN_RIGHT);
 	m_refreshSlider->callback(cb_refreshSlides);
+
+	// install refresh interval slider
+	m_aaSamplesSlider = new Fl_Value_Slider(10, 115, 180, 20, "Pixel Samples");
+	m_aaSamplesSlider->user_data((void*)(this));	// record self to be used by static callback functions
+	m_aaSamplesSlider->type(FL_HOR_NICE_SLIDER);
+	m_aaSamplesSlider->labelfont(FL_COURIER);
+	m_aaSamplesSlider->labelsize(12);
+	m_aaSamplesSlider->minimum(1);
+	m_aaSamplesSlider->maximum(16);
+	m_aaSamplesSlider->step(1);
+	m_aaSamplesSlider->value(m_nSamples);
+	m_aaSamplesSlider->align(FL_ALIGN_RIGHT);
+	m_aaSamplesSlider->callback(cb_sampleSlides);
 
 	// set up debugging display checkbox
 	m_debuggingDisplayCheckButton = new Fl_Check_Button(10, 429, 140, 20, "Debugging display");

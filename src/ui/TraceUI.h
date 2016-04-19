@@ -20,7 +20,7 @@ class TraceUI {
 public:
 	TraceUI() : m_nDepth(0), m_nSize(512), m_displayDebuggingInfo(false),
                     m_shadows(true), m_smoothshade(true), raytracer(0),
-                    m_nFilterWidth(1)
+                    m_nFilterWidth(1), m_nSamples(1)
                     {}
 
 	virtual int	run() = 0;
@@ -36,12 +36,16 @@ public:
 	// accessors:
 	int	getSize() const { return m_nSize; }
 	int	getDepth() const { return m_nDepth; }
+	//int getSamples() const { return m_nSamples; }
 	int		getFilterWidth() const { return m_nFilterWidth; }
 
 	bool	shadowSw() const { return m_shadows; }
 	bool	smShadSw() const { return m_smoothshade; }
 
 	static bool m_debug;
+
+	int m_nSamples;
+
 
 protected:
 	RayTracer*	raytracer;

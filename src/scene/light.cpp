@@ -23,7 +23,12 @@ Vec3d DirectionalLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 
   Scene* scene = SceneElement::getScene();
   if(scene->intersect(rayToLight, i)) {
-    return Vec3d(0, 0, 0);
+    const Material& m = i.getMaterial();
+    if(m.Trans()) {
+      return color * m.kt(i);
+    } else {
+      return Vec3d(0, 0, 0);
+    }
   }
 
 
@@ -91,8 +96,14 @@ Vec3d PointLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 
   double tLight = (position - p).length();
 
-  if(i.t < tLight)
-    return Vec3d(0, 0, 0);
+  if(i.t < tLight) {
+    const Material& m = i.getMaterial();
+    if(m.Trans()) {
+      return color * m.kt(i);
+    } else {
+      return Vec3d(0, 0, 0);
+    }
+  }
 
   return color;
 

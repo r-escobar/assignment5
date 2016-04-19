@@ -153,6 +153,27 @@ bool TrimeshFace::intersectLocal(ray& r, isect& i) const
         i.setUVCoordinates(Vec2d(u, v));
 
 
+        if(parent->vertNorms) {
+            Vec3d aNormal = parent->normals[ids[0]];
+            Vec3d bNormal = parent->normals[ids[1]];
+            Vec3d cNormal = parent->normals[ids[2]];
+            Vec3d newNormal = u * aNormal + v * bNormal + w * cNormal;
+            newNormal.normalize();
+            i.setN(newNormal);
+        }
+
+        if(!parent->materials.empty()) {
+            Material aMat = *(parent->materials[ids[0]]);
+            Material bMat = *(parent->materials[ids[1]]);
+            Material cMat = *(parent->materials[ids[2]]);
+            Material newMat = u * aMat;
+            newMat += v * bMat;
+            newMat += w * cMat;
+            i.setMaterial(newMat);
+        }
+
+
+
 
         i.setObject(this);
 

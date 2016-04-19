@@ -53,11 +53,28 @@ Vec3d RayTracer::tracePixel(int i, int j)
 
 	unsigned char *pixel = buffer + ( i + j * buffer_width ) * 3;
 
-	col = trace(x, y);
+	//col = trace(x, y);
+
+
+
+	double subPixWidth = 1.0 / (double(buffer_width) * traceUI->m_nSamples);
+	double subPixHeight = 1.0 / (double(buffer_height) * traceUI->m_nSamples);
+
+	for(int i = 0; i < traceUI->m_nSamples; i++) {
+		for(int j = 0; j < traceUI->m_nSamples; j++) {
+			double newX = x + i * subPixWidth;
+			double newY = y + i * subPixHeight;
+			Vec3d newCol = trace(newX, newY);
+			col += newCol;
+		}
+	}
+
+	col /= double(pow(traceUI->m_nSamples, 2));
 
 	pixel[0] = (int)( 255.0 * col[0]);
 	pixel[1] = (int)( 255.0 * col[1]);
 	pixel[2] = (int)( 255.0 * col[2]);
+
 	return col;
 }
 
@@ -82,6 +99,10 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 		// rays.
 
 		//std::cout << "INTERSECTED WITH SOMETHING!\n";
+
+
+	  
+
 
 	  const Material& m = i.getMaterial();
 	  Vec3d color = m.shade(scene, r, i);
