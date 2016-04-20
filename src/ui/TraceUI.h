@@ -20,7 +20,7 @@ class TraceUI {
 public:
 	TraceUI() : m_nDepth(0), m_nSize(512), m_displayDebuggingInfo(false),
                     m_shadows(true), m_smoothshade(true), raytracer(0),
-                    m_nFilterWidth(1), m_nSamples(1)
+                    m_nFilterWidth(1), m_nSamples(3), m_sampleThreshold(100)
                     {}
 
 	virtual int	run() = 0;
@@ -45,6 +45,8 @@ public:
 	static bool m_debug;
 
 	int m_nSamples;
+	int m_sampleThreshold;
+
 
 
 protected:

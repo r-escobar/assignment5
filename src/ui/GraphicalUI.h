@@ -101,6 +101,8 @@ private:
 	static void cb_bfCheckButton(Fl_Widget* o, void* v);
 
 	static void cb_sampleSlides(Fl_Widget* o, void* v);
+	static void cb_sampleThreshSlides(Fl_Widget* o, void* v);
+
 
 	static bool stopTrace;
 	static bool doneTrace;

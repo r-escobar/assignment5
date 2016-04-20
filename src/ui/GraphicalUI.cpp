@@ -131,6 +131,11 @@ void GraphicalUI::cb_sampleSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->m_nSamples=int(((Fl_Slider *)o)->value()) ;
 }
 
+void GraphicalUI::cb_sampleThreshSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_sampleThreshold=int(((Fl_Slider *)o)->value()) ;
+}
+
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 {
 	pUI=(GraphicalUI*)(o->user_data());
@@ -302,7 +307,7 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_refreshSlider->align(FL_ALIGN_RIGHT);
 	m_refreshSlider->callback(cb_refreshSlides);
 
-	// install refresh interval slider
+	// install pixel samples slider
 	m_aaSamplesSlider = new Fl_Value_Slider(10, 115, 180, 20, "Pixel Samples");
 	m_aaSamplesSlider->user_data((void*)(this));	// record self to be used by static callback functions
 	m_aaSamplesSlider->type(FL_HOR_NICE_SLIDER);
@@ -314,6 +319,19 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_aaSamplesSlider->value(m_nSamples);
 	m_aaSamplesSlider->align(FL_ALIGN_RIGHT);
 	m_aaSamplesSlider->callback(cb_sampleSlides);
+
+	// install sample threshold slider
+	m_aaThreshSlider = new Fl_Value_Slider(10, 140, 180, 20, "Supersample Threshold (x1000)");
+	m_aaThreshSlider->user_data((void*)(this));	// record self to be used by static callback functions
+	m_aaThreshSlider->type(FL_HOR_NICE_SLIDER);
+	m_aaThreshSlider->labelfont(FL_COURIER);
+	m_aaThreshSlider->labelsize(12);
+	m_aaThreshSlider->minimum(0);
+	m_aaThreshSlider->maximum(1000);
+	m_aaThreshSlider->step(1);
+	m_aaThreshSlider->value(m_sampleThreshold);
+	m_aaThreshSlider->align(FL_ALIGN_RIGHT);
+	m_aaThreshSlider->callback(cb_sampleThreshSlides);
 
 	// set up debugging display checkbox
 	m_debuggingDisplayCheckButton = new Fl_Check_Button(10, 429, 140, 20, "Debugging display");
