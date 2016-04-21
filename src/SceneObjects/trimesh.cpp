@@ -65,18 +65,22 @@ bool Trimesh::intersectLocal(ray& r, isect& i) const
 	double tmax = 0.0;
 	typedef Faces::const_iterator iter;
 	bool have_one = false;
-	for( iter j = faces.begin(); j != faces.end(); ++j )
-	  {
-	    isect cur;
-	    if( (*j)->intersectLocal( r, cur ) )
-	      {
-		if( !have_one || (cur.t < i.t) )
-		  {
-		    i = cur;
-		    have_one = true;
-		  }
-	      }
-	  }
+
+    if(kdtree) kdtree->intersect(r, i, have_one);
+    else {
+        for( iter j = faces.begin(); j != faces.end(); ++j ){
+            isect cur;
+            if( (*j)->intersectLocal( r, cur ) )
+              {
+                if( !have_one || (cur.t < i.t) )
+                  {
+                    i = cur;
+                    have_one = true;
+                  }
+              }
+      }
+    }
+
 	if( !have_one ) i.setT(1000.0);
 	return have_one;
 }

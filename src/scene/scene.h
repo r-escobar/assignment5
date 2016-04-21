@@ -28,7 +28,106 @@ class Light;
 class Scene;
 
 template <typename Obj>
-class KdTree;
+class KdTree {
+  public:
+    BoundingBox bbox;
+    KdTree<Obj>* left;
+    KdTree<Obj>* right;
+    std::vector<Obj*>* objectList;
+    int splittingAxis;
+    double splitAxisCoord;
+
+    KdTree(std::vector<Obj*>& primitives, int currentDepth) : bbox(Vec3d(0.0, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0)){
+      left = NULL;
+      right = NULL;
+      objectList = NULL;
+      splittingAxis = 0;
+      splitAxisCoord = 0;
+
+      int numObjs = primitives.size();
+
+      // Get the combined bounding box of all primitives below this node
+      if(numObjs > 0) {
+        bbox = primitives[0]->getBoundingBox();
+        for(int i = 1; i < numObjs; i++) {
+          bbox.merge(primitives[i]->getBoundingBox());
+        }
+      }
+
+      if(currentDepth >= 15 || numObjs <= 10) {
+        // We've reached a leaf. Fill it's object list with the current primitive list
+        objectList = new std::vector<Obj*>(primitives);
+        return;
+      }
+
+      std::vector<Obj*> rightObjList;
+      std::vector<Obj*> leftObjList;
+
+      // Get the longest axis of the overall bounding box
+      splittingAxis = bbox.longestAxis();
+
+      // Get the center point of the overall bounding box
+      splitAxisCoord = bbox.getCenterPoint()[splittingAxis];
+
+      // Split up the triangles based on which side of the splittingAxis their centers are in
+      for(int i = 0; i < primitives.size(); i++) {
+        Vec3d currentCenter = primitives[i]->getBoundingBox().getCenterPoint();
+
+        if(currentCenter[splittingAxis] >= splitAxisCoord) {
+          rightObjList.push_back(primitives[i]);
+        } else {
+          leftObjList.push_back(primitives[i]);
+        }
+      }
+
+      if(rightObjList.size() == 0 && leftObjList.size() > 0) rightObjList = leftObjList;
+      if(leftObjList.size() == 0 && rightObjList.size() > 0) leftObjList = rightObjList;
+
+
+      right = new KdTree<Obj>(rightObjList, currentDepth + 1);
+      left = new KdTree<Obj>(leftObjList, currentDepth + 1);
+
+
+    };
+
+
+    void intersect(ray& r, isect& i, bool& have_one) {
+      // Minimum and maximum times of intersection
+      double tmin;
+      double tmax;
+
+      std::cout << "Checking for intersections (within KdTree)\n";
+
+      // Check for intersection with this node's bbox 
+      if(bbox.intersect(r, tmin, tmax)) {
+        std::cout << "Detected a hit (within KdTree)\n";
+
+        // If we aren't on a leaf, recurse down it's children
+        if(!left && !right) {
+          left->intersect(r, i, have_one);
+          right->intersect(r, i, have_one);
+        } else {
+          // We're on a leaf
+
+          isect currentIntersection;
+
+          // Check for intersections with all triangles contained by this node
+          for(int index = 0; index < objectList->size(); index++) {
+            if((*objectList)[index]->intersect(r, currentIntersection)) {
+              // Intersected with a triangle
+              if(!have_one || (currentIntersection.t < i.t)) {
+                i = currentIntersection;
+                have_one = true;
+              }
+            }
+          }
+        }
+      }
+      return;
+    }
+
+};
+
 
 class SceneElement {
 
@@ -169,6 +268,9 @@ public:
   // this should be overridden if hasBoundingBoxCapability() is true.
   virtual BoundingBox ComputeLocalBoundingBox() { return BoundingBox(); }
 
+  virtual bool isTrimesh() { return false; }
+  virtual void buildKdTree() {std::cout << "Attempting to build a KdTree. Do nothing\n";};
+
   void setTransform(TransformNode *transform) { this->transform = transform; };
     
  Geometry(Scene *scene) : SceneElement( scene ) {}
@@ -228,6 +330,8 @@ public:
   typedef std::vector<Geometry*>::const_iterator cgiter;
 
   TransformRoot transformRoot;
+  KdTree<Geometry>* kdtreeRoot;
+
 
   Scene() : transformRoot(), objects(), lights() {}
   virtual ~Scene();
@@ -286,7 +390,6 @@ public:
   // are exempt from this requirement.
   BoundingBox sceneBounds;
   
-  KdTree<Geometry>* kdtree;
 
  public:
   // This is used for debugging purposes only.

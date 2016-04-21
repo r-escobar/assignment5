@@ -23,12 +23,14 @@ class Trimesh : public MaterialSceneObject
     Normals normals;
     Materials materials;
 	BoundingBox localBounds;
+    KdTree<TrimeshFace>* kdtree;
 
 public:
     Trimesh( Scene *scene, Material *mat, TransformNode *transform )
         : MaterialSceneObject(scene, mat), 
 			displayListWithMaterials(0),
-			displayListWithoutMaterials(0)
+			displayListWithoutMaterials(0), 
+            kdtree(NULL)
     {
       this->transform = transform;
       vertNorms = false;
@@ -49,6 +51,16 @@ public:
     char *doubleCheck();
     
     void generateNormals();
+
+    virtual bool isTrimesh() { return true; }
+    virtual void buildKdTree() {
+        // if(kdtree)
+        //     delete kdtree;
+
+        std::cout << "Building KdTree (in trimesh.h)\n";
+
+        kdtree = new KdTree<TrimeshFace>(faces, 0);
+    }
 
     bool hasBoundingBoxCapability() const { return true; }
       

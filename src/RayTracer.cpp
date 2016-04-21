@@ -55,7 +55,7 @@ Vec3d RayTracer::tracePixel(int i, int j)
 
 	col = trace(x, y);
 
-	srand(time(NULL));
+	//srand(time(NULL));
 
 	double subPixWidth = 1.0 / (double(buffer_width) * traceUI->m_nSamples);
 	double subPixHeight = 1.0 / (double(buffer_height) * traceUI->m_nSamples);
@@ -82,10 +82,10 @@ Vec3d RayTracer::tracePixel(int i, int j)
 		for(int i = 0; i < traceUI->m_nSamples; i++) {
 			for(int j = 0; j < traceUI->m_nSamples; j++) {
 				// Random displacement to prevent artifacts
-				double randX = (((double) rand() / (RAND_MAX + 1))) * subPixWidth;
-				double randY = (((double) rand() / (RAND_MAX + 1))) * subPixHeight;
-				double newX = x + i * subPixWidth + randX;
-				double newY = y + j * subPixHeight + randY;
+				// double randX = (((double) rand() / (RAND_MAX + 1))) * subPixWidth;
+				// double randY = (((double) rand() / (RAND_MAX + 1))) * subPixHeight;
+				double newX = x + i * subPixWidth;
+				double newY = y + j * subPixHeight;
 				Vec3d newCol = trace(newX, newY);
 				col += newCol;			
 			}
@@ -263,6 +263,8 @@ bool RayTracer::loadScene( char* fn ) {
 	}
 
 	if( !sceneLoaded() ) return false;
+
+	scene->buildKdTree();
 
 	return true;
 }

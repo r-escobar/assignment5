@@ -18,6 +18,26 @@ public:
 	Vec3d getMax() const { return bmax; }
 	bool isEmpty() { return bEmpty; }
 
+	int longestAxis() {
+		int currentMaxAxis = 0;
+
+		Vec3d axes = bmax - bmin;
+		double maxAxisLength = std::numeric_limits<double>::min();
+
+		for(int i = 0; i < 3; i++) {
+			if(axes[i] > maxAxisLength) {
+				maxAxisLength = axes[i];
+				currentMaxAxis = i;
+			}
+		}
+
+		return currentMaxAxis;
+	}
+
+	Vec3d getCenterPoint() const { 
+		return (bmin + bmax) / 2.0; 
+	}
+
 	void setMin(Vec3d bMin) {
 		bmin = bMin;
 		dirty = true;
@@ -60,6 +80,8 @@ public:
 	// in tMax and return true, else return false.
 	// Using Kay/Kajiya algorithm.
 	bool intersect(const ray& r, double& tMin, double& tMax) const {
+      	std::cout << "Checking for intersections (within bbox)\n";
+
 		Vec3d R0 = r.getPosition();
 		Vec3d Rd = r.getDirection();
 		tMin = -1.0e308; // 1.0e308 is close to infinity... close enough for us!

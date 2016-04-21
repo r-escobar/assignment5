@@ -6,6 +6,8 @@
 
 using namespace std;
 
+
+
 bool Geometry::intersect(ray& r, isect& i) const {
 	double tmin, tmax;
 	if (hasBoundingBoxCapability() && !(bounds.intersect(r, tmin, tmax))) return false;
@@ -52,23 +54,41 @@ Scene::~Scene() {
     for( t = textureCache.begin(); t != textureCache.end(); t++ ) delete (*t).second;
 }
 
+void Scene::buildKdTree() {
+	// if(kdtreeRoot)
+	// 	delete kdtreeRoot;
+
+	std::cout << "Building KdTree (in scene.cpp)\n";
+
+	for(int i = 0; i < objects.size(); i++) {
+		if(objects[i]->isTrimesh())
+			objects[i]->buildKdTree();
+	}
+	kdtreeRoot = new KdTree<Geometry>(objects, 0);
+}
+
+
 // Get any intersection with an object.  Return information about the 
 // intersection through the reference parameter.
 bool Scene::intersect(ray& r, isect& i) const {
-	//std::cout << "CHECKING FOR INTERSECTIONS\n";
+	std::cout << "checking for intersections (in scene.cpp)\n";
 	double tmin = 0.0;
 	double tmax = 0.0;
 	bool have_one = false;
-	typedef vector<Geometry*>::const_iterator iter;
-	for(iter j = objects.begin(); j != objects.end(); ++j) {
-		isect cur;
-		if( (*j)->intersect(r, cur) ) {
-			if(!have_one || (cur.t < i.t)) {
-				i = cur;
-				have_one = true;
+	if(kdtreeRoot) kdtreeRoot->intersect(r, i, have_one);
+	else {
+		typedef vector<Geometry*>::const_iterator iter;
+		for(iter j = objects.begin(); j != objects.end(); ++j) {
+			isect cur;
+			if( (*j)->intersect(r, cur) ) {
+				if(!have_one || (cur.t < i.t)) {
+					i = cur;
+					have_one = true;
+				}
 			}
 		}
 	}
+
 	if(!have_one) i.setT(1000.0);
 	// if debugging,
 	if (TraceUI::m_debug) intersectCache.push_back(std::make_pair(new ray(r), new isect(i)));
