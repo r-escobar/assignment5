@@ -37,7 +37,7 @@ class KdTree {
     int splittingAxis;
     double splitAxisCoord;
 
-    KdTree(std::vector<Obj*>& primitives, int currentDepth) : bbox(Vec3d(0.0, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0)){
+    KdTree(std::vector<Obj*>& primitives, int currentDepth) {
       left = NULL;
       right = NULL;
       objectList = NULL;
@@ -73,11 +73,9 @@ class KdTree {
       for(int i = 0; i < primitives.size(); i++) {
         Vec3d currentCenter = primitives[i]->getBoundingBox().getCenterPoint();
 
-        if(currentCenter[splittingAxis] >= splitAxisCoord) {
-          rightObjList.push_back(primitives[i]);
-        } else {
-          leftObjList.push_back(primitives[i]);
-        }
+        if(currentCenter[splittingAxis] >= splitAxisCoord) rightObjList.push_back(primitives[i]);
+        else leftObjList.push_back(primitives[i]);
+      
       }
 
       if(rightObjList.size() == 0 && leftObjList.size() > 0) rightObjList = leftObjList;
@@ -96,18 +94,20 @@ class KdTree {
       double tmin;
       double tmax;
 
-      std::cout << "Checking for intersections (within KdTree)\n";
+      //std::cout << "Checking for intersections (within KdTree)\n";
 
       // Check for intersection with this node's bbox 
       if(bbox.intersect(r, tmin, tmax)) {
-        std::cout << "Detected a hit (within KdTree)\n";
+        //std::cout << "Detected a hit (within KdTree)\n";
 
         // If we aren't on a leaf, recurse down it's children
-        if(!left && !right) {
+        if(left || right) {
+          //std::cout << "About to check left and right intersections (within KdTree)\n";
           left->intersect(r, i, have_one);
           right->intersect(r, i, have_one);
         } else {
           // We're on a leaf
+          //std::cout << "We're on a leaf (within KdTree)\n";
 
           isect currentIntersection;
 
@@ -123,6 +123,7 @@ class KdTree {
           }
         }
       }
+      //std::cout << "Did not detect a hit (within KdTree)\n";
       return;
     }
 
@@ -269,7 +270,7 @@ public:
   virtual BoundingBox ComputeLocalBoundingBox() { return BoundingBox(); }
 
   virtual bool isTrimesh() { return false; }
-  virtual void buildKdTree() {std::cout << "Attempting to build a KdTree. Do nothing\n";};
+  virtual void buildKdTree() {/*std::cout << "Attempting to build a KdTree. Do nothing\n";*/};
 
   void setTransform(TransformNode *transform) { this->transform = transform; };
     

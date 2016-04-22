@@ -1,0 +1,154 @@
+SBT-raytracer 1.0
+
+camera {
+	position = (0,0,-4);
+	viewdir = (0,0,1);
+	aspectratio = 1;
+	updir = (0,1,0);
+}
+
+directional_light {
+	direction = (0, 0, 1);
+	colour = (0.6, 0.6, 0.6);
+}
+
+point_light {
+	position = (2, 2, -2);
+	colour = (1, 0.3, 0.3);
+	constant_attenuation_coeff= 0.25;
+	linear_attenuation_coeff = 0.003372407;
+	quadratic_attenuation_coeff = 0.000045492;	
+}
+
+		material = { 
+			diffuse = (0.4,0.8,0.2);
+			specular = (1,1,0);
+			shininess = 64;
+		} 
+
+directional_light {
+	direction = (0, 0, 1);
+	colour = (1.0, 1.0, 1.0);
+}
+
+point_light {
+	position = (-1,4,-0.4);
+	colour = (1.0,1.0,0.7)
+	constant_attenuation_coeff= 0.25;
+	linear_attenuation_coeff = 0.003372407;
+	quadratic_attenuation_coeff = 0.000045492;	
+}
+
+scale(1.5,sphere{
+		material = {
+			diffuse = (1.0, 1.0, 0.0);
+			reflective = (1.0,1.0,1.0);
+		}});
+
+translate( -0.4, 0.3, -1.5,
+	scale( 0.1,
+		sphere {
+		  material = {
+			diffuse = (0.0, 0.0, 0.0);
+			ambient = (0.2,0.2,0.2);
+			specular = (0.5,0.5,0.5);
+			shininess = 118.518528;
+		}}))
+
+translate( 0.4, 0.3, -1.5,
+	scale( 0.1,
+		sphere {
+		  material = {
+			diffuse = (0.0, 0.0, 0.0);
+			ambient = (0.2,0.2,0.2);
+			specular = (0.5,0.5,0.5);
+			shininess = 118.518528;
+		}}))
+
+
+translate( 0.0, -0.2, -1.42, cone {
+				capped=true;
+				height=2;
+				bottom_radius=0.5;
+				top_radius=0.2;
+				material = { 
+					diffuse = (0.0,0.0,0.0);
+				}
+		}
+)
+
+
+translate( 0.0, -0.2, -1.42, cone {
+				capped=true;
+				height=2;
+				bottom_radius=0.5;
+				top_radius=0.2;
+				material = { 
+					diffuse = (0.0,0.0,0.0);
+					specular = (0.9,0.4,0.0);
+					shininess = 76.8;
+					ambient = (0.5,0.5,0.5);
+				}
+		}
+)
+
+
+translate( -0.9, 0, -1.0, cone {
+				capped=true;
+				height=2;
+				bottom_radius=0.5;
+				top_radius=0.2;
+				material = { 
+					diffuse = (0.0,1.0,0.0);
+					specular = (0.9,0.4,0.0);
+					shininess = 76.8;
+					ambient = (0.5,0.5,0.5);
+				}
+		}
+)
+
+
+translate( 0.9, 0, -1.0, cone {
+				capped=true;
+				height=2;
+				bottom_radius=0.5;
+				top_radius=0.2;
+				material = { 
+					diffuse = (0.0,1.0,0.0);
+					specular = (0.9,0.4,0.0);
+					shininess = 76.8;
+					ambient = (0.5,0.5,0.5);
+				}
+		}
+)
+
+translate( 0.0, 1, 0, 
+	scale( 2,
+		box { 
+		material = { 
+			diffuse = (0.7, 0, 1.0);
+			specular = (0.9,0.4,0.0);
+			shininess = 76.8;
+		};
+		}))
+
+translate( 0.0, -1.5, -0.5, 
+	scale( 1.0,
+		box { 
+		material = { 
+			diffuse = (1.0, 1.0, 0.0);
+			specular = (0.9,0.4,0.0);
+			shininess = 76.8;
+		};
+		}))
+
+translate( 0.0, -2.3, 0, 
+	scale( 2.0,
+		box { 
+		material = { 
+			diffuse = (1.0, 1.0, 0.0);
+			specular = (0.9,0.4,0.0);
+			shininess = 76.8;
+		};
+		}))
+

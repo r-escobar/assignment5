@@ -80,7 +80,7 @@ public:
 	// in tMax and return true, else return false.
 	// Using Kay/Kajiya algorithm.
 	bool intersect(const ray& r, double& tMin, double& tMax) const {
-      	std::cout << "Checking for intersections (within bbox)\n";
+      	//std::cout << "Checking for intersections (within bbox)\n";
 
 		Vec3d R0 = r.getPosition();
 		Vec3d Rd = r.getDirection();

@@ -55,14 +55,10 @@ Scene::~Scene() {
 }
 
 void Scene::buildKdTree() {
-	// if(kdtreeRoot)
-	// 	delete kdtreeRoot;
-
-	std::cout << "Building KdTree (in scene.cpp)\n";
+	//std::cout << "Building KdTree (in scene.cpp)\n";
 
 	for(int i = 0; i < objects.size(); i++) {
-		if(objects[i]->isTrimesh())
-			objects[i]->buildKdTree();
+		if(objects[i]->isTrimesh()) objects[i]->buildKdTree();
 	}
 	kdtreeRoot = new KdTree<Geometry>(objects, 0);
 }
@@ -71,7 +67,7 @@ void Scene::buildKdTree() {
 // Get any intersection with an object.  Return information about the 
 // intersection through the reference parameter.
 bool Scene::intersect(ray& r, isect& i) const {
-	std::cout << "checking for intersections (in scene.cpp)\n";
+	//std::cout << "checking for intersections (in scene.cpp)\n";
 	double tmin = 0.0;
 	double tmax = 0.0;
 	bool have_one = false;

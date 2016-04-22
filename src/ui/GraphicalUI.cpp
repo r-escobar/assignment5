@@ -326,7 +326,7 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_aaThreshSlider->type(FL_HOR_NICE_SLIDER);
 	m_aaThreshSlider->labelfont(FL_COURIER);
 	m_aaThreshSlider->labelsize(12);
-	m_aaThreshSlider->minimum(0);
+	m_aaThreshSlider->minimum(1);
 	m_aaThreshSlider->maximum(1000);
 	m_aaThreshSlider->step(1);
 	m_aaThreshSlider->value(m_sampleThreshold);

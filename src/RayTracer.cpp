@@ -55,8 +55,6 @@ Vec3d RayTracer::tracePixel(int i, int j)
 
 	col = trace(x, y);
 
-	//srand(time(NULL));
-
 	double subPixWidth = 1.0 / (double(buffer_width) * traceUI->m_nSamples);
 	double subPixHeight = 1.0 / (double(buffer_height) * traceUI->m_nSamples);
 
@@ -81,9 +79,6 @@ Vec3d RayTracer::tracePixel(int i, int j)
 	if(testVal1 > sampleThresh || testVal2 > sampleThresh || testVal3 > sampleThresh || testVal4 > sampleThresh || testVal5 > sampleThresh || testVal6 > sampleThresh) {
 		for(int i = 0; i < traceUI->m_nSamples; i++) {
 			for(int j = 0; j < traceUI->m_nSamples; j++) {
-				// Random displacement to prevent artifacts
-				// double randX = (((double) rand() / (RAND_MAX + 1))) * subPixWidth;
-				// double randY = (((double) rand() / (RAND_MAX + 1))) * subPixHeight;
 				double newX = x + i * subPixWidth;
 				double newY = y + j * subPixHeight;
 				Vec3d newCol = trace(newX, newY);

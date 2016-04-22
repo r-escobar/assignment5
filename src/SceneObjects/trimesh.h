@@ -29,8 +29,7 @@ public:
     Trimesh( Scene *scene, Material *mat, TransformNode *transform )
         : MaterialSceneObject(scene, mat), 
 			displayListWithMaterials(0),
-			displayListWithoutMaterials(0), 
-            kdtree(NULL)
+			displayListWithoutMaterials(0)
     {
       this->transform = transform;
       vertNorms = false;
@@ -54,10 +53,7 @@ public:
 
     virtual bool isTrimesh() { return true; }
     virtual void buildKdTree() {
-        // if(kdtree)
-        //     delete kdtree;
-
-        std::cout << "Building KdTree (in trimesh.h)\n";
+        //std::cout << "Building KdTree (in trimesh.h)\n";
 
         kdtree = new KdTree<TrimeshFace>(faces, 0);
     }
